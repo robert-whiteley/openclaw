@@ -1,0 +1,6 @@
+{
+  "gateway": {
+    "bind": "all",
+    "port": 8080
+  }
+}
