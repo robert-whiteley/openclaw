@@ -8,5 +8,11 @@
       ],
       "allowInsecureAuth": true
     }
+  },
+  "channels": {
+    "telegram": {
+      "botToken": "8425504266:AAEkSlC09MrjymQovKaLrztL7-qghnX-rEc",
+      "chatIds": [8546874462]
+    }
   }
 }
