@@ -15,6 +15,19 @@
       "botToken": "${TELEGRAM_BOT_TOKEN}"
     }
   },
+  "tools": {
+    "media": {
+      "audio": {
+        "enabled": true,
+        "models": [
+          {
+            "provider": "openai",
+            "model": "whisper-1"
+          }
+        ]
+      }
+    }
+  },
   "agents": {
     "defaults": {
       "model": {
