@@ -1,6 +1,12 @@
 {
   "gateway": {
     "port": 8080,
-    "bind": "lan"
+    "bind": "lan",
+    "controlUi": {
+      "allowedOrigins": [
+        "https://openclaw-fv5c.onrender.com"
+      ],
+      "allowInsecureAuth": true
+    }
   }
 }
