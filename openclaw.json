@@ -14,5 +14,12 @@
       "enabled": true,
       "botToken": "${TELEGRAM_BOT_TOKEN}"
     }
+  },
+  "agents": {
+    "defaults": {
+      "model": {
+        "primary": "openai/gpt-4o-mini"
+      }
+    }
   }
 }
