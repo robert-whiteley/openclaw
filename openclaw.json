@@ -13,6 +13,10 @@
     "telegram": {
       "enabled": true,
       "botToken": "${TELEGRAM_BOT_TOKEN}"
+    },
+    "whatsapp": {
+      "enabled": true,
+      "dmPolicy": "pairing"
     }
   },
   "tools": {
