@@ -31,7 +31,7 @@
   "agents": {
     "defaults": {
       "model": {
-        "primary": "openai/gpt-4.1-mini"
+        "primary": "openai/gpt-4o"
       }
     }
   }
