@@ -1,5 +1,5 @@
 #!/bin/bash
-set -e # We can remove 'x' now that it's working, but 'e' keeps it safe
+set -e
 
 # 1. SSH Setup
 mkdir -p ~/.ssh
@@ -10,9 +10,12 @@ eval "$(ssh-agent -s)"
 ssh-add ~/.ssh/id_render_openclaw
 ssh-keyscan github.com >> ~/.ssh/known_hosts
 
-# 2. Workspace Setup
+# 2. Workspace Setup & Identity
 mkdir -p /data/openclaw-workspace
 cd /data/openclaw-workspace
+git config --global user.email "rcwhiteley@hotmail.co.uk"
+git config --global user.name "Robert Whiteley"
+git config --global --add safe.directory /data/openclaw-workspace
 
 # 3. Sync Workspace
 if [ ! -d ".git" ]; then
@@ -27,6 +30,6 @@ mkdir -p /data/openclaw-workspace/system_files
 rm -rf ~/.openclaw
 ln -s /data/openclaw-workspace/system_files ~/.openclaw
 
-# 5. Launch (Added the --allow-unconfigured flag)
+# 5. Launch
 echo "Launching OpenClaw Gateway..."
 exec npx openclaw gateway --port $PORT --allow-unconfigured
