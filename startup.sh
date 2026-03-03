@@ -1,42 +1,37 @@
 #!/bin/bash
-set -e # Exit on error
+set -e
 
-# 1. Write deploy key with preserved newlines
+# 1. SSH Setup
 mkdir -p ~/.ssh
 chmod 700 ~/.ssh
-printf "%b" "$OPENCLAW_DEPLOY_KEY" > ~/.ssh/id_ed25519_workspace
+echo "$OPENCLAW_DEPLOY_KEY" > ~/.ssh/id_ed25519_workspace
 chmod 600 ~/.ssh/id_ed25519_workspace
-
 eval "$(ssh-agent -s)"
 ssh-add ~/.ssh/id_ed25519_workspace
 ssh-keyscan github.com >> ~/.ssh/known_hosts
 
-# 2. Ensure the Workspace exists on the Persistent Disk
+# 2. Workspace Setup on Persistent Disk
 mkdir -p /data/openclaw-workspace
 cd /data/openclaw-workspace
 
-# 3. Pull/Clone your WORKSPACE (Identity/Memory)
-if [ -d ".git" ]; then
-    echo "Found existing workspace, pulling updates..."
-    git fetch origin main
-    git reset --hard origin/main
-else
-    echo "Workspace empty, cloning..."
-    # Clean up any hidden files that might block the clone
-    rm -rf ..?* .[!.]* * git clone git@github.com:robert-whiteley/openclaw-workspace.git .
+# 3. Best Practice: Init & Fetch (Avoids "Non-empty directory" errors)
+if [ ! -d ".git" ]; then
+    echo "Initializing new workspace on disk..."
+    git init
+    git remote add origin git@github.com:robert-whiteley/openclaw-workspace.git
 fi
 
-# 4. Persistence Hack: Link the app's config to the disk
-# This ensures skills and logs stay on the disk
-mkdir -p /data/openclaw-workspace/system_files
+echo "Syncing workspace from GitHub..."
+git fetch origin main
+git reset --hard origin/main
+
+# 4. Persistence link for config/skills
+# Maps the internal config folder to the persistent disk
+mkdir -p /data/openclaw-workspace/.system
 rm -rf ~/.openclaw
-ln -s /data/openclaw-workspace/system_files ~/.openclaw
+ln -s /data/openclaw-workspace/.system ~/.openclaw
 
-# 5. Install Skills (ClawHub)
-if [ ! -d "/data/openclaw-workspace/system_files/clawhub/node_modules" ]; then
-    npm install --prefix ~/.openclaw/clawhub clawhub
-fi
-
-# 6. Start the actual OpenClaw Gateway
-# We use 'exec' so the gateway receives shutdown signals from Render
+# 5. Start OpenClaw
+# Gateway listens on $PORT (Render default)
+echo "Launching OpenClaw Gateway..."
 exec npx openclaw gateway --port $PORT
