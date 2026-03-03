@@ -42,7 +42,7 @@
     "defaults": {
       "workDir": "/data/openclaw-workspace",
       "model": {
-        "primary": "openai/gpt-4o"
+        "primary": "openai/gpt-5.2"
       }
     }
   }
