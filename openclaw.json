@@ -43,7 +43,7 @@
     "defaults": {
       "workspace": "/data/openclaw-workspace",
       "model": {
-        "primary": "openai/gpt-5.2"
+        "primary": "openai/gpt-4.1-mini"
       },
       "memorySearch": {
         "enabled": false
