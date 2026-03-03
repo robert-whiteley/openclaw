@@ -1,10 +1,12 @@
 #!/bin/bash
 set -e # Exit on error
 
-# 1. Setup SSH for GitHub access
+# 1. Write deploy key with preserved newlines
 mkdir -p ~/.ssh
-echo "$OPENCLAW_DEPLOY_KEY" > ~/.ssh/id_ed25519_workspace
+chmod 700 ~/.ssh
+printf "%b" "$OPENCLAW_DEPLOY_KEY" > ~/.ssh/id_ed25519_workspace
 chmod 600 ~/.ssh/id_ed25519_workspace
+
 eval "$(ssh-agent -s)"
 ssh-add ~/.ssh/id_ed25519_workspace
 ssh-keyscan github.com >> ~/.ssh/known_hosts
