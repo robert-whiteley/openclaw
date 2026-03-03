@@ -17,10 +17,13 @@ cd /data/openclaw-workspace
 
 # 3. Pull/Clone your WORKSPACE (Identity/Memory)
 if [ -d ".git" ]; then
-    git pull origin main
+    echo "Found existing workspace, pulling updates..."
+    git fetch origin main
+    git reset --hard origin/main
 else
-    # NOTE: Using the -workspace repo here
-    git clone git@github.com:robert-whiteley/openclaw-workspace.git .
+    echo "Workspace empty, cloning..."
+    # Clean up any hidden files that might block the clone
+    rm -rf ..?* .[!.]* * git clone git@github.com:robert-whiteley/openclaw-workspace.git .
 fi
 
 # 4. Persistence Hack: Link the app's config to the disk
