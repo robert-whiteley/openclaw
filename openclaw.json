@@ -21,6 +21,11 @@
     }
   },
   "tools": {
+    "exec": { 
+      "enabled": true,
+      "approval": "manual" 
+    },
+    "file_write": { "enabled": true },
     "media": {
       "audio": {
         "enabled": true,
@@ -35,6 +40,7 @@
   },
   "agents": {
     "defaults": {
+      "workDir": "/data/openclaw-workspace",
       "model": {
         "primary": "openai/gpt-4o"
       }
