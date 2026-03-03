@@ -1,12 +1,15 @@
 {
   "gateway": {
     "port": 8080,
+    "mode": "local",
     "bind": "lan",
+    "auth": {
+      "mode": "token",
+      "token": "${OPENCLAW_GATEWAY_TOKEN}"
+    },
     "controlUi": {
-      "allowedOrigins": [
-        "https://openclaw-fv5c.onrender.com"
-      ],
-      "allowInsecureAuth": true
+      "allowedOrigins": ["https://openclaw-fv5c.onrender.com"],
+      "allowInsecureAuth": false
     }
   },
   "channels": {
@@ -21,11 +24,9 @@
     }
   },
   "tools": {
-    "exec": { 
-      "enabled": true,
-      "approval": "manual" 
+    "exec": {
+      "ask": "always"
     },
-    "file_write": { "enabled": true },
     "media": {
       "audio": {
         "enabled": true,
@@ -40,9 +41,12 @@
   },
   "agents": {
     "defaults": {
-      "workDir": "/data/openclaw-workspace",
+      "workspace": "/data/openclaw-workspace",
       "model": {
         "primary": "openai/gpt-5.2"
+      },
+      "memorySearch": {
+        "enabled": false
       }
     }
   }

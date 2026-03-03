@@ -1,5 +1,5 @@
 #!/bin/bash
-set -e
+set -euo pipefail
 
 # 1. SSH Setup
 mkdir -p ~/.ssh
@@ -27,9 +27,23 @@ git reset --hard origin/main
 
 # 4. Link System Files
 mkdir -p /data/openclaw-workspace/system_files
+mkdir -p /data/openclaw-workspace/system_files/agents/main/sessions
+mkdir -p /data/openclaw-workspace/system_files/credentials
 rm -rf ~/.openclaw
 ln -s /data/openclaw-workspace/system_files ~/.openclaw
 
 # 5. Launch
+OPENCLAW_CONFIG_PATH="${OPENCLAW_CONFIG_PATH:-/app/openclaw.json}"
+export OPENCLAW_CONFIG_PATH
+
+if [ -f "$OPENCLAW_CONFIG_PATH" ]; then
+    echo "Validating OpenClaw config at $OPENCLAW_CONFIG_PATH..."
+    chmod 600 "$OPENCLAW_CONFIG_PATH" || true
+    # Strict preflight: fails on schema/env var issues before gateway startup.
+    npx openclaw config get gateway.bind >/dev/null
+else
+    echo "Warning: Config file not found at $OPENCLAW_CONFIG_PATH; using default config discovery."
+fi
+
 echo "Launching OpenClaw Gateway..."
-exec npx openclaw gateway --port $PORT --allow-unconfigured
+exec npx openclaw gateway --port "${PORT:-8080}" --allow-unconfigured
