@@ -1,15 +1,12 @@
 #!/bin/bash
-set -ex  # The 'x' turns on detailed execution logging
+set -e # We can remove 'x' now that it's working, but 'e' keeps it safe
 
 # 1. SSH Setup
 mkdir -p ~/.ssh
 chmod 700 ~/.ssh
-# Using the NEW filename we generated
 echo "$OPENCLAW_DEPLOY_KEY" > ~/.ssh/id_render_openclaw
 chmod 600 ~/.ssh/id_render_openclaw
-
 eval "$(ssh-agent -s)"
-# CRITICAL: This must match the filename above
 ssh-add ~/.ssh/id_render_openclaw
 ssh-keyscan github.com >> ~/.ssh/known_hosts
 
@@ -17,14 +14,11 @@ ssh-keyscan github.com >> ~/.ssh/known_hosts
 mkdir -p /data/openclaw-workspace
 cd /data/openclaw-workspace
 
-# 3. Best Practice Sync
+# 3. Sync Workspace
 if [ ! -d ".git" ]; then
-    echo "Initializing workspace..."
     git init -b main
     git remote add origin git@github.com:robert-whiteley/openclaw-workspace.git
 fi
-
-echo "Syncing workspace from GitHub..."
 git fetch origin main
 git reset --hard origin/main
 
@@ -33,6 +27,6 @@ mkdir -p /data/openclaw-workspace/system_files
 rm -rf ~/.openclaw
 ln -s /data/openclaw-workspace/system_files ~/.openclaw
 
-# 5. Launch
+# 5. Launch (Added the --allow-unconfigured flag)
 echo "Launching OpenClaw Gateway..."
-exec npx openclaw gateway --port $PORT
+exec npx openclaw gateway --port $PORT --allow-unconfigured
