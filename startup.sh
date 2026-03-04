@@ -39,6 +39,11 @@ else
     git pull --ff-only origin "$WORKSPACE_BRANCH"
 fi
 
+# 3.5 Apply versioned cron payload (best effort)
+if [ -f "$WORKSPACE_DIR/scripts/sync-cron-job.js" ]; then
+  node "$WORKSPACE_DIR/scripts/sync-cron-job.js" || echo "cron sync skipped/failed (non-fatal)"
+fi
+
 # 4. Link System Files
 mkdir -p "$WORKSPACE_DIR/system_files"
 mkdir -p "$WORKSPACE_DIR/system_files/agents/main/sessions"
