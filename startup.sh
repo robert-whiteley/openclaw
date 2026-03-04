@@ -11,26 +11,39 @@ ssh-add ~/.ssh/id_render_openclaw
 ssh-keyscan github.com >> ~/.ssh/known_hosts
 
 # 2. Workspace Setup & Identity
-mkdir -p /data/openclaw-workspace
-cd /data/openclaw-workspace
+WORKSPACE_DIR="${OPENCLAW_WORKSPACE_DIR:-/data/workspace}"
+WORKSPACE_REPO="${OPENCLAW_WORKSPACE_REPO:-git@github.com:robert-whiteley/openclaw-workspace.git}"
+WORKSPACE_BRANCH="${OPENCLAW_WORKSPACE_BRANCH:-main}"
+
+mkdir -p "$WORKSPACE_DIR"
+cd "$WORKSPACE_DIR"
+
 git config --global user.email "rcwhiteley@hotmail.co.uk"
 git config --global user.name "Robert Whiteley"
-git config --global --add safe.directory /data/openclaw-workspace
+git config --global --add safe.directory "$WORKSPACE_DIR"
 
-# 3. Sync Workspace
+# 3. Sync Workspace (safe, non-destructive)
 if [ ! -d ".git" ]; then
-    git init -b main
-    git remote add origin git@github.com:robert-whiteley/openclaw-workspace.git
+    git init -b "$WORKSPACE_BRANCH"
+    git remote add origin "$WORKSPACE_REPO"
 fi
-git fetch origin main
-git reset --hard origin/main
+
+git remote set-url origin "$WORKSPACE_REPO"
+git fetch origin "$WORKSPACE_BRANCH"
+
+if [ -n "$(git status --porcelain)" ]; then
+    echo "Workspace has local changes; skipping pull to avoid overwrite."
+else
+    git checkout "$WORKSPACE_BRANCH"
+    git pull --ff-only origin "$WORKSPACE_BRANCH"
+fi
 
 # 4. Link System Files
-mkdir -p /data/openclaw-workspace/system_files
-mkdir -p /data/openclaw-workspace/system_files/agents/main/sessions
-mkdir -p /data/openclaw-workspace/system_files/credentials
+mkdir -p "$WORKSPACE_DIR/system_files"
+mkdir -p "$WORKSPACE_DIR/system_files/agents/main/sessions"
+mkdir -p "$WORKSPACE_DIR/system_files/credentials"
 rm -rf ~/.openclaw
-ln -s /data/openclaw-workspace/system_files ~/.openclaw
+ln -s "$WORKSPACE_DIR/system_files" ~/.openclaw
 
 # 5. Launch
 OPENCLAW_CONFIG_PATH="${OPENCLAW_CONFIG_PATH:-/app/openclaw.json}"
@@ -39,7 +52,6 @@ export OPENCLAW_CONFIG_PATH
 if [ -f "$OPENCLAW_CONFIG_PATH" ]; then
     echo "Validating OpenClaw config at $OPENCLAW_CONFIG_PATH..."
     chmod 600 "$OPENCLAW_CONFIG_PATH" || true
-    # Strict preflight: fails on schema/env var issues before gateway startup.
     npx openclaw config get gateway.bind >/dev/null
 else
     echo "Warning: Config file not found at $OPENCLAW_CONFIG_PATH; using default config discovery."
