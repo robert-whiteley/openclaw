@@ -43,7 +43,16 @@
     "defaults": {
       "workspace": "/data/openclaw-workspace",
       "model": {
-        "primary": "openai/gpt-4.1-mini"
+        "primary": "openai/gpt-4.1-mini",
+        "fallbacks": ["openai/gpt-5.2"]
+      },
+      "models": {
+        "openai/gpt-4.1-mini": {
+          "alias": "mini"
+        },
+        "openai/gpt-5.2": {
+          "alias": "gpt"
+        }
       },
       "memorySearch": {
         "enabled": false
