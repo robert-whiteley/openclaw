@@ -8,7 +8,8 @@ echo "$OPENCLAW_DEPLOY_KEY" > ~/.ssh/id_render_openclaw
 chmod 600 ~/.ssh/id_render_openclaw
 eval "$(ssh-agent -s)"
 ssh-add ~/.ssh/id_render_openclaw
-ssh-keyscan github.com >> ~/.ssh/known_hosts
+touch ~/.ssh/known_hosts
+ssh-keygen -F github.com >/dev/null || ssh-keyscan github.com >> ~/.ssh/known_hosts
 
 # 2. Workspace Setup & Identity
 WORKSPACE_DIR="${OPENCLAW_WORKSPACE_DIR:-/data/workspace}"
